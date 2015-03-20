@@ -1,0 +1,592 @@
+<!DOCTYPE html>
+<html>
+    <head>
+    	<script src="../../deps/three66.js"></script>
+    	<script src="../../deps/csg.js"></script>
+    	<script src="../../deps/threeCSG.js"></script>
+    	<script src="../../deps/geomUtils.js"></script>
+    	<script src="../../deps/Noise.js"></script>
+
+        <script data-main="../../src/app" src="../../deps/require.js"></script>
+         <script>
+			
+		</script>
+    </head>
+    <body>
+        <div id="container"></div>
+
+        <script>
+
+        	setTimeout(function(){
+	        	var obj={
+					setup:function(){	
+						tree = new TREE();
+						console.log(tree);
+						joint = tree.generate({joints:[30,5],divs:[5],rads:[1],angles:[.5],length:[1,5]});
+						// scene.add(tree);
+						hepseba = tree.makeList([0,0,-1,-1,-1,-1,-1]);
+					},
+					draw:function(c){
+						tree.applyFunc(
+							tree.makeInfo([
+					           [0,-1,-1], {rz:0,jFreq:.5,jMult:.3,jOff:1},//,rz:Math.cos(count*.1)*.1,rx:Math.sin(count*.133)*.1},
+					           // [0,-1,-1,-1,-1], {tx:0,rz:.1+count*.001},
+					           // [0,-1,-1,-1,-1,-1,-1], {tx:0,rz:.2,sc:.9}
+					       	]),tree.transform);
+						// tree.applyFunc([
+					 //           hepseba, {angle:new THREE.Vector3(0,0,1),radians:Math.sin(count*1.33)*.01}
+					 //       	],tree.axisRotate);
+						
+
+						tubes = tree.makeTubes({width:1,lengthSegs:2,widthSegs:5});//,func:function(t){return 1+Math.sin(t)}});
+						scene.add(tubes);
+						tubes.position.y=-50;
+						var p = tree.reportLayers()[1];
+						var d = tree.worldPositionsArray(p);
+						var f = tree.nurbsishSurface(d,5,5);
+						console.log(f);
+						var b = tree.tubes(f[1]);
+						b.position.y=-25;
+						scene.add(b);
+						var t = tree.tubes(f[0],{lengthSegs:5});
+						t.position.y=-25;
+						scene.add(t);
+						// var g = THREE.ParametricGeometry(function(){return f})
+						// scene.add(tubes.children[1]);
+						// tubes.children[0].geometry.mergeVertices();
+						// tubes.children[1].geometry.mergeVertices();
+						// var geometryThree = tree.subtract(tubes.children[0],tubes.children[1]);
+						// var mesh = new THREE.Mesh(geometryThree,new THREE.MeshLambertMaterial(  ));
+						// console.log(mesh);
+						// scene.add(mesh);
+						// tree.animateTubes({width:.2,lengthSegs:1,func:function(t){return 1+Math.sin(t+count)}},scene);
+
+					}
+				}
+
+				var booler = {
+					setup:function(){
+						p = new TREE();
+						console.log(p.boolean);
+						// p.subtract();
+						var geo = new THREE.SphereGeometry( 10,40,40);
+						var m1 = new THREE.Mesh(geo,new THREE.MeshLambertMaterial(  ));
+						// var geo2 = new THREE.SphereGeometry( 10,20,20);
+						var m2 = new THREE.Mesh(geo,new THREE.MeshLambertMaterial(  ));
+						// console.log(geo2);
+						m2.position.x = 2.5;
+						m2.position.z = 2.5;
+						m1.position.x=-9.5;
+
+						// THREEx.GeometryUtils.scale(geo2,new THREE.Vector3(.5,.5,2));
+						// for(var i = 0 ; i < geo2.vertices.length ; i++){
+						// 	var vert = geo2.vertices[i];
+						// 	vert.multiply(new THREE.Vector3(3.5,.5,3.5));
+						// 	geo2.verticesNeedUpdate = true;
+						// }
+						var geometryThree = p.intersect(m1,m2);//intersect(m1,m2);
+						// var csgGeo    = THREE.CSG.toCSG(geo);
+						// var csgGeo2    = THREE.CSG.toCSG(geo2);
+						// var res = csgGeo.subtract(csgGeo2);
+						// var geometryThree  = THREE.CSG.fromCSG(res);
+						// rotation_matrix = new THREE.Matrix4( );
+						// rotation_matrix.setRotationFromEuler( new THREE.Euler( 0, 0, 0 ) );
+						var mesh = new THREE.Mesh(geometryThree,new THREE.MeshLambertMaterial( { wireframe:true}));
+						scene.add(mesh);
+					}
+				}
+
+				var sucker = {
+					setup:function(){
+						glob = 0;
+						tree = new TREE();
+						geo = new THREE.SphereGeometry( 5,86,86);
+						cube = new THREE.BoxGeometry(5,5,5,2,2,2);
+						c = new THREE.Mesh(cube,new THREE.MeshLambertMaterial( ))
+						// m = tree.wrapGeo(geo,c);
+						// c.position.y=100;
+						// for(var i = 0 ; i < geo.faces.length ; i++){
+						// 	for(var q = 0 ; q < 3 ; q++){
+						// 		if(q===0)
+						// 		var v = geo.vertices[geo.faces[i].a];
+						// 		else if(q===1)
+						// 			var v = geo.vertices[geo.faces[i].b];
+						// 		else 
+						// 			var v = geo.vertices[geo.faces[i].c];
+						// 		var n = geo.faces[i].vertexNormals[q];
+						// 		n.multiplyScalar(-1);
+						// 		var p = new THREE.Raycaster(v,n);
+						// 		var d = p.intersectObject(c);
+						// 		if(d.length>0){
+						// 			// console.log(d[0].point);
+						// 			var p =d[0].point;
+						// 			v.x = p.x;
+						// 			v.y = p.y;
+						// 			v.z = p.z;
+						// 			geo.verticesNeedUpdate=true;
+						// 		}
+						// 	}
+						// }
+						// geo.computeFaceNormals();
+						// geo.computeVertexNormals();
+						// var m = new THREE.Mesh(geo,new THREE.MeshLambertMaterial(  {color:tree.utils.color(1,2,3), wireframe:true}));
+						// m.rotation.x = 1;
+						// m.rotation.y = 1;
+						gg = tree.easyBalls({size:10,resolution:300,ballSize:4,animated:false,array:geo.vertices});
+						gg.geometry.mergeVertices();
+
+						gg.geometry.makeGroups;
+						// // // gg.showBox();
+						gg.rotation.x = 1;
+						gg.rotation.y = 1;
+						// // gg.material.vertexColors = 1;
+						// // var pp = new THREE.Mesh(geo,gg.material);
+						// // geo.mergeVertices();
+						// // // scene.add(gg)
+						// // console.log(gg);
+						// // new THREE.CubeGeometry( 1,1,1,5,5,5)
+						// // console.log(findUnvisited(gg.geometry));
+						// c.geometry.mergeVertices();
+						// 
+						// 
+						// tree.makeNeighbors(gg.geometry,2);
+						qb = tree.splitShells(gg);
+
+
+						// console.log(c.geometry.vertices);
+						// console.log(qb);
+						// var m = tree.wrapGeo(qb.children[0].geometry,c);
+						// 
+						// 
+						// tree.averageVertices(qb.children[0].geometry);
+						// m.rotation.x = .5;
+						// m.rotation.y = .5;
+
+
+						// for(var i = 0 ; i < m.geometry.vertices.length ; i++){
+
+						// 	var vert = m.geometry.vertices[i];
+						// 	for(var j = 0 ; j < m.geometry.vertices.length ; j++){
+						// 		if(i==j)
+						// 			j++;
+						// 		else{
+						// 			var tVert = m.geometry.vertices[j];
+						// 			if(vert.distanceTo(tVert)<5)
+						// 		}
+						// 	}
+						// }
+
+						// m.geometry.mergeVertices();
+						// m.geometry.computeFaceNormals();
+						// m.geometry.computeVertexNormals();
+						// console.log(qb);
+						scene.add(qb);
+						console.log(qb);
+
+						
+
+
+
+					}
+				}
+
+
+
+				// function splitShells(obj){
+
+				// 	var bb = [];
+
+				// 	function fillSelect(geo){
+
+				// 	var selected = [];
+		
+
+				// 	var faceNum = findUnvisited(geo);
+
+				// 	var sf = geo.faces[faceNum];
+				// 	sf.visited = true;
+
+				// 	selected.push(sf);
+
+				// 	var q = 0;
+
+				// 	for(var i = 0 ; i < geo.faces.length ; i++){
+
+				// 		var f = geo.faces[i];
+
+				// 		if(f.visited == undefined)
+				// 			f.visited = false;
+
+				// 		if(!f.visited){
+				// 			for(var j = 0 ; j < selected.length ; j++){
+								
+				// 			var sf = selected[j];
+				// 				if(
+				// 					sf.a===f.a && sf.b===f.c ||
+				// 					sf.a===f.b && sf.b===f.a ||
+				// 					sf.a===f.c && sf.b===f.b ||
+				// 					sf.b===f.a && sf.c===f.c ||
+				// 					sf.b===f.b && sf.c===f.a ||
+				// 					sf.b===f.c && sf.c===f.b ||
+				// 					sf.c===f.a && sf.a===f.c ||
+				// 					sf.c===f.b && sf.a===f.a ||
+				// 					sf.c===f.c && sf.a===f.b 
+				// 					)
+				// 				{
+				// 					if(!f.visited){
+				// 						f.visited = true;
+				// 						selected.push(f);
+				// 						// if(selected.length%500==0)
+				// 						// 	console.log(selected.length);
+				// 						i=0;
+				// 					}
+				// 				}
+				// 			}
+				// 		}
+
+				// 	}
+
+				// 	return selected;
+
+				// }
+
+				// function fullBorders(array){
+
+				// 	var r = false
+				// 	for(var i = 0 ; i < array ; i++){
+				// 		if(array[i].borderCount<3)
+				// 			r=true;
+				// 	}
+				// 	if(r)
+				// 		console.log('full');
+				// 	return r;
+				// }
+
+				// function findUnvisited(geo){
+
+				// 	var r = -1;
+
+				// 	for(var i = 0 ; i < geo.faces.length ; i++){
+				// 		if(!geo.faces[i].visited){
+				// 			r=i;
+				// 			i=geo.faces.length;
+				// 		}
+				// 	}
+
+				// 	return r;
+
+				// }
+
+				// 	while(findUnvisited(obj.geometry)>-1)
+				// 		bb.push(fillSelect(obj.geometry));
+
+				// 	var returnObj = new THREE.Object3D();
+
+				// 	for(var i = 0 ; i < bb.length ; i++){
+				// 		var geo = new THREE.Geometry();
+				// 		for(var j = 0 ; j < bb[i].length ; j++){
+				// 			geo.vertices.push(obj.geometry.vertices[bb[i][j].a]);
+				// 			geo.vertices.push(obj.geometry.vertices[bb[i][j].b]);
+				// 			geo.vertices.push(obj.geometry.vertices[bb[i][j].c]);
+				// 			geo.faces.push(new THREE.Face3());
+				// 			geo.faces[geo.faces.length-1].a = geo.vertices.length-3;
+				// 			geo.faces[geo.faces.length-1].b = geo.vertices.length-2;
+				// 			geo.faces[geo.faces.length-1].c = geo.vertices.length-1;
+				// 		}
+				// 		geo.mergeVertices();
+				// 		geo.computeFaceNormals();
+				// 		geo.computeVertexNormals();
+				// 		returnObj.add(new THREE.Mesh(geo,obj.material));
+				// 	}
+
+				// 	return returnObj;
+				// }
+
+				// function fillSelect(geo,Array,FaceNum){
+
+				// 	var array = Array || [];
+				// 	if(FaceNum===undefined){
+				// 		var faceNum = findUnvisited(geo);
+				// 	}
+				// 	else
+				// 		var faceNum = FaceNum;
+
+				// 	var sf = geo.faces[faceNum];
+				// 	sf.visited = true;
+
+				// 	for(var i = 0 ; i <geo.faces.length ; i++){
+
+				// 		var f = geo.faces[i];
+
+				// 		if(!f.visited){
+				// 			if(
+				// 				sf.a===f.a && sf.b===f.c ||
+				// 				sf.a===f.b && sf.b===f.a ||
+				// 				sf.a===f.c && sf.b===f.b ||
+				// 				sf.b===f.a && sf.c===f.c ||
+				// 				sf.b===f.b && sf.c===f.a ||
+				// 				sf.b===f.c && sf.c===f.b ||
+				// 				sf.c===f.a && sf.a===f.c ||
+				// 				sf.c===f.b && sf.a===f.a ||
+				// 				sf.c===f.c && sf.a===f.b 
+				// 				)
+				// 			{
+				// 				f.visited = true;
+				// 				array.push(f);
+				// 				fillSelect(geo,array,i);
+				// 				// i=0;
+				// 			}
+				// 		}
+				// 	}
+
+				// 	return array;
+
+				// }
+
+				// function fillSelect(geo){
+
+				// 	var selected = [];
+		
+
+				// 	var faceNum = findUnvisited(geo);
+
+				// 	var sf = geo.faces[faceNum];
+				// 	sf.visited = true;
+
+				// 	selected.push(sf);
+
+				// 	var q = 0;
+
+				// 	for(var i = 0 ; i < geo.faces.length ; i++){
+
+				// 		var f = geo.faces[i];
+
+				// 		if(f.visited == undefined)
+				// 			f.visited = false;
+
+				// 		if(!f.visited){
+				// 			for(var j = 0 ; j < selected.length ; j++){
+								
+				// 			var sf = selected[j];
+				// 				if(
+				// 					sf.a===f.a && sf.b===f.c ||
+				// 					sf.a===f.b && sf.b===f.a ||
+				// 					sf.a===f.c && sf.b===f.b ||
+				// 					sf.b===f.a && sf.c===f.c ||
+				// 					sf.b===f.b && sf.c===f.a ||
+				// 					sf.b===f.c && sf.c===f.b ||
+				// 					sf.c===f.a && sf.a===f.c ||
+				// 					sf.c===f.b && sf.a===f.a ||
+				// 					sf.c===f.c && sf.a===f.b 
+				// 					)
+				// 				{
+				// 					if(!f.visited){
+				// 						f.visited = true;
+				// 						selected.push(f);
+				// 						// if(selected.length%500==0)
+				// 						// 	console.log(selected.length);
+				// 						i=0;
+				// 					}
+				// 				}
+				// 			}
+				// 		}
+
+				// 	}
+
+				// 	return selected;
+
+				// }
+
+				// function fullBorders(array){
+
+				// 	var r = false
+				// 	for(var i = 0 ; i < array ; i++){
+				// 		if(array[i].borderCount<3)
+				// 			r=true;
+				// 	}
+				// 	if(r)
+				// 		console.log('full');
+				// 	return r;
+				// }
+
+				// function findUnvisited(geo){
+
+				// 	var r = -1;
+
+				// 	for(var i = 0 ; i < geo.faces.length ; i++){
+				// 		if(!geo.faces[i].visited){
+				// 			r=i;
+				// 			i=geo.faces.length;
+				// 		}
+				// 	}
+
+				// 	return r;
+
+				// }
+
+				function testRecurse(Array,num){
+
+					num++;
+
+					if(num<50){
+						if(Math.random()<.5){
+							Array.push('a');
+							testRecurse(Array,num);
+						}
+						else{
+							Array.push('b');
+							testRecurse(Array,num);
+						}
+					}
+
+					return Array;
+				}
+
+
+				// function subtract(a,b){
+				// 	var geo  = a.geometry.clone();
+				// 	var geo2 = b.geometry.clone();
+				// 	b.updateMatrixWorld();
+				// 	for(var i = 0 ; i < geo2.vertices.length ; i++){
+				// 		geo2.vertices[i].applyMatrix4(b.matrixWorld);
+				// 	}
+				// 	var csgGeo    = THREE.CSG.toCSG(geo);
+				// 	var csgGeo2    = THREE.CSG.toCSG(geo2);
+				// 	var res = csgGeo.subtract(csgGeo2);
+				// 	var geometryThree  = THREE.CSG.fromCSG(res);
+				// 	var mesh = new THREE.Mesh(geometryThree,new THREE.MeshLambertMaterial(  ));
+				// 	return geometryThree;
+
+				// }
+
+				// function subtract(a,b){
+				// 	/**
+				// 	 * takes two Mesh objects and subtracts them
+				// 	 * @type {Array}
+				// 	 */
+				// 	var geo = [];
+				// 	geo[0] = a.geometry.clone();
+				// 	geo[1] = b.geometry.clone();
+				// 	b.updateMatrixWorld();
+				// 	a.updateMatrixWorld();
+				// 	for(var j = 0 ; j < 2 ; j++){
+				// 		var g = geo[j];
+				// 		for(var i = 0 ; i < g.vertices.length ; i++){
+				// 			if(j==0)
+				// 				g.vertices[i].applyMatrix4(a.matrixWorld);
+				// 			else
+				// 				g.vertices[i].applyMatrix4(b.matrixWorld);
+				// 		}
+				// 	}
+				// 	var csgGeo    = THREE.CSG.toCSG(geo[0]);
+				// 	var csgGeo2   = THREE.CSG.toCSG(geo[1]);
+				// 	var res = csgGeo.subtract(csgGeo2);
+				// 	var geometryThree  = THREE.CSG.fromCSG(res);
+				// 	var mesh = new THREE.Mesh(geometryThree,new THREE.MeshLambertMaterial(  ));
+				// 	return geometryThree;
+
+				// }
+
+				// function prepGeo(a,b){
+				// 	var geo = [];
+				// 	geo[0] = a.geometry.clone();
+				// 	geo[1] = b.geometry.clone();
+				// 	b.updateMatrixWorld();
+				// 	a.updateMatrixWorld();
+				// 	for(var j = 0 ; j < 2 ; j++){
+				// 		var g = geo[j];
+				// 		for(var i = 0 ; i < g.vertices.length ; i++){
+				// 			if(j==0)
+				// 				g.vertices[i].applyMatrix4(a.matrixWorld);
+				// 			else
+				// 				g.vertices[i].applyMatrix4(b.matrixWorld);
+				// 		}
+				// 	}
+				// 	var csGeo = [];
+				// 	csGeo[0] = THREE.CSG.toCSG(geo[0]);
+				// 	csGeo[1] = THREE.CSG.toCSG(geo[1]);
+				// 	return csGeo;
+				// }
+
+				// function union(a,b){
+				// 	var csGeo = prepGeo(a,b);
+				// 	var res = csGeo[0].union(csGeo[1]);
+				// 	var geometryThree  = THREE.CSG.fromCSG(res);
+				// 	var mesh = new THREE.Mesh(geometryThree,a.material);
+				// 	return geometryThree;
+				// }
+
+				// function subtract(a,b){
+				// 	var csGeo = prepGeo(a,b);
+				// 	var res = csGeo[0].union(csGeo[1]);
+				// 	var geometryThree  = THREE.CSG.fromCSG(res);
+				// 	var mesh = new THREE.Mesh(geometryThree,a.material);
+				// 	return geometryThree;
+				// }
+
+				// function intersect(a,b){
+				// 	var csGeo = prepGeo(a,b);
+				// 	var res = csGeo[0].intersect(csGeo[1]);
+				// 	var geometryThree  = THREE.CSG.fromCSG(res);
+				// 	var mesh = new THREE.Mesh(geometryThree,a.material);
+				// 	return geometryThree;
+				// }
+		
+		
+				var camera, renderer;
+
+				var sphere, torus, group;
+
+				var frameCount = 0;
+
+				init();
+				animate();
+				
+				function init() {
+
+					count=0;
+
+					camera = new THREE.PerspectiveCamera( 10, window.innerWidth / window.innerHeight, 1, 10000 );
+					camera.position.z = 100;
+
+					scene = new THREE.Scene();
+
+
+					light = new THREE.DirectionalLight( 0xdddddd );
+					light.position.set( 1, 1, 1 ); scene.add( light );
+
+					light = new THREE.AmbientLight( 0x112233); scene.add( light );
+
+					renderer = new THREE.WebGLRenderer( { clearColor: 0x000000, antialias: true, alpha:true } );
+
+					renderer.setSize( window.innerWidth, window.innerHeight );
+					container = document.getElementById( 'container' );
+					container.appendChild( renderer.domElement );
+
+					// obj.setup();
+					// obj.draw();
+					// booler.setup();
+					sucker.setup();
+
+				}
+
+				function animate() {
+					// gg.rotation.y+=.01;
+					count++;
+					// if(count<10)
+					// obj.draw(count);
+					render();
+					requestAnimationFrame( animate );
+
+					
+				}
+				
+				function render() {
+					renderer.render( scene, camera );
+				}
+			},100);
+		
+		</script>
+	
+    </body>
+</html>

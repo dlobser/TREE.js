@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html>
+    <head>
+    	<script src="../../deps/three66.js"></script>
+    	<script src="../../deps/csg.js"></script>
+    	<script src="../../deps/threeCSG.js"></script>
+    	<script src="../../deps/geomUtils.js"></script>
+    	<script src="../../deps/Noise.js"></script>
+
+        <script data-main="../../src/app" src="../../deps/require.js"></script>
+         <script>
+			
+		</script>
+    </head>
+    <body>
+        <div id="container"></div>
+
+        <script>
+
+        	setTimeout(function(){
+
+        		var go = {
+        			setup:function(){
+		        		sphere = new THREE.CubeGeometry(5,5,5,5,5,5);
+		        		sphere.mergeVertices();
+		        		sp = new THREE.Mesh(sphere,new THREE.MeshLambertMaterial(  ));
+		        		tree = new TREE();
+		        		m = tree.easyBalls({resolution:50,size:10,ballSize:12,array:sphere.vertices});
+		        		m.material.wireframe = true;
+		        		// q = tree.splitShells(m);
+		        		// q.children[0].material.wireframe=true;
+		        		// q.children[0].geometry.mergeVertices();
+		        		// q.remove(q.children[1]);
+
+		        		// tree.makeNeighbors(q.children[0].geometry);
+		        		// tree.averageVertices(m.geometry,.5);
+		        		// tree.averageVertices(m.geometry,1);
+		        		tree.wrapGeo(m.geometry,sp);
+		        		tree.averageVertices(m.geometry,7);
+
+		        		// q.children
+		        		
+		        		// q.children[0].material.wireframe=true;
+		        		// q.children[0].scale.x=2;
+		        		// q.children[0].scale.y=2;
+		        		scene.add(m);
+		        	}
+		        	,
+		        	draw:function(){
+		        		m.rotation.x+=.01;
+		        		m.rotation.y+=.01;
+		        	}
+		        }
+
+		
+				var camera, renderer;
+
+				var sphere, torus, group;
+
+				var frameCount = 0;
+
+				init();
+				animate();
+				
+				function init() {
+
+					count=0;
+
+					camera = new THREE.PerspectiveCamera( 10, window.innerWidth / window.innerHeight, 1, 10000 );
+					camera.position.z = 100;
+
+					scene = new THREE.Scene();
+
+
+					light = new THREE.DirectionalLight( 0xdddddd );
+					light.position.set( 1, 1, 1 ); scene.add( light );
+
+					light = new THREE.AmbientLight( 0x112233); scene.add( light );
+
+					renderer = new THREE.WebGLRenderer( { clearColor: 0x000000, antialias: true, alpha:true } );
+
+					renderer.setSize( window.innerWidth, window.innerHeight );
+					container = document.getElementById( 'container' );
+					container.appendChild( renderer.domElement );
+
+					// obj.setup();
+					// obj.draw();
+					// booler.setup();
+					// sucker.setup();
+					go.setup();
+
+				}
+
+				function animate() {
+					go.draw();
+					// gg.rotation.y+=.01;
+					count++;
+					// if(count<10)
+					// obj.draw(count);
+					render();
+					requestAnimationFrame( animate );
+
+					
+				}
+				
+				function render() {
+					renderer.render( scene, camera );
+				}
+			},100);
+		
+		</script>
+	
+    </body>
+</html>
